@@ -7,7 +7,7 @@
 ```U(A, B) = (B – A) x U(0, 1) + A ```
 
 ## Filas
-![](https://github.com/mrRodrigo/Simulador-filas-Kendall/blob/master/download.png)
+![](https://github.com/mrRodrigo/Simulador-filas-Kendall/blob/master/asset/download.png)
 
 ## NOTAÇÃO DE KENDALL
 
