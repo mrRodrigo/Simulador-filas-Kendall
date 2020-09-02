@@ -4,7 +4,7 @@ class Event {
     constructor(type, time, FILA) {
         this.type = type;
         this.time = time;
-        this.FILA = FILA;
+        this.queueState = FILA;
     }
 }
 

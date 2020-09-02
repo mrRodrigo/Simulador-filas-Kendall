@@ -1,5 +1,5 @@
 const { Event, EnumEvent } = require('./Event');
-const { rnd } = require('./random');
+const { rnd } = require('./Random');
 
 class Scheduler {
     constructor(queue, randomList) {
@@ -7,8 +7,9 @@ class Scheduler {
         this.currentTime = 0;
         this.previousTime = 0;
         this.loss = 0;
-        this.events = [];
-        this.tempos = {};
+        this.events = []; // events to be processed
+        this.logEvents = []; // only for log in the end of simulation
+        this.statesTime = {}; // all time for each states
         this.randomList = this.setRandomList(randomList);
     };
 
@@ -26,11 +27,12 @@ class Scheduler {
     }
 
     countTime() {
-        const time = this.currentTime - this.previousTime;
-        //tempos[this.queue.position] = (Number(tempos[this.queue.position]) || 0) + time;
+        const deltaTime = this.currentTime - this.previousTime;
+        this.statesTime[this.queue.position] =
+            (Number(this.statesTime[this.queue.position]) || 0) + deltaTime;
     };
 
-    processArrival() {
+    processArrival(event) {
         this.countTime();
 
         if (this.queue.position < this.queue.capacity) {
@@ -39,6 +41,8 @@ class Scheduler {
         } else this.loss++;
 
         this.schedulerArrival();
+
+        this.logEvents.push(event);
     };
 
     schedulerArrival(init) {
@@ -56,12 +60,14 @@ class Scheduler {
         );
     };
 
-    processExit() {
+    processExit(event) {
         this.countTime();
 
         this.queue.decrementPosition();
 
         if (this.queue.position >= this.queue.size) this.schedulerExit();
+
+        this.logEvents.push(event);
     };
 
     schedulerExit() {
@@ -78,18 +84,25 @@ class Scheduler {
         );
     };
 
+    getSimulationData(){
+        return {
+            loss: this.loss,
+            logEvents: this.logEvents,
+            statesTime: this.statesTime,
+            queue: this.queue,
+        };
+    };
+
     execute() {
         const event = this.events.sort((a, b) => a.time - b.time).shift();
-
-        console.log(event);
 
         this.previousTime = this.currentTime;
         this.currentTime = event.time;
 
         if (event.type === EnumEvent.ARRIVAL) {
-            this.processArrival();
+            this.processArrival(event);
         } else if (event.type === EnumEvent.EXIT) {
-            this.processExit();
+            this.processExit(event);
         }
     };
 }

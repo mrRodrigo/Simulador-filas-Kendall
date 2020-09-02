@@ -1,5 +1,6 @@
 const Scheduler = require('./src/Scheduler');
 const Queue = require('./src/Queue');
+const Logger = require('./src/Logger');
 
 const queueConfig = {
     size: 1,
@@ -20,3 +21,5 @@ scheduler.schedulerArrival(queue.init);
 while (scheduler.randomList.length > 0) {
     scheduler.execute();
 }
+
+Logger.showSimulationData(scheduler.getSimulationData());

@@ -15,7 +15,7 @@ class Queue {
     }
 
     decrementPosition() {
-        this.position++;
+        this.position--;
     }
 
 }
