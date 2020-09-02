@@ -7,7 +7,7 @@ class Logger {
         this._renderLine();
         this._renderLine();
         this._formatStatesTime(statesTime);
-        this._formatLossAndFullTime(loss);
+        this._formatLossAndFullTime(loss, logEvents);
     }
 
     _formatStatesTime(statesTime){
@@ -17,8 +17,8 @@ class Logger {
         formated.map(e => console.log(e));
     }
 
-    _formatLossAndFullTime(loss){
-        console.log(`\nTotal loss: ${loss}`);
+    _formatLossAndFullTime(loss, logEvents){
+        console.log(`\nTotal loss: ${loss}  Total time: ${logEvents.slice(-1).pop().time}`);
     }
 
     _formatTime(time){
