@@ -1,5 +1,6 @@
 class Queue {
-    constructor({ capacity, arrivalMin, arrivalMax, awaitMin, awaitMax, init, size }) {
+    constructor({ name, capacity, arrivalMin, arrivalMax, awaitMin, awaitMax, init, size }) {
+        this.name = name;
         this.capacity = capacity;
         this.arrivalMin = arrivalMin;
         this.arrivalMax = arrivalMax;
