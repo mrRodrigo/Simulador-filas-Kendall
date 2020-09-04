@@ -6,7 +6,7 @@ class Logger {
         this._formatQueueConfig(queue);
         this._renderLine();
         console.log(`${' '.repeat(20)}*EVENTS*${' '.repeat(20)}`);
-        console.table(logEvents);
+        this._formatEvents(logEvents);
         this._renderLine();
         this._renderLine();
         this._formatStatesTime(statesTime);
@@ -14,6 +14,15 @@ class Logger {
         this._formatProbability(statesTime, logEvents);
     }
 
+    _formatEvents(logEvents){
+        console.table(
+            logEvents.map(e => ({
+                type: e.type,
+                time: +this._formatTime(e.time),
+                queueState: e.queueState
+            }))
+        );
+    }
     _formatStatesTime(statesTime){
         const formated = Object.keys(statesTime).map(
             k => `With ${k} on the queue, ${this._formatTime(statesTime[k])} has been elapsed.`
