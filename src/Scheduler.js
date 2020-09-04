@@ -1,5 +1,5 @@
 const { Event, EnumEvent } = require('./Event');
-const { rnd, generateRandomBetween1And0 } = require('./Random');
+const { rnd, generateRandomBetween1And0 } = require('./Math');
 
 class Scheduler {
     constructor(queue, randomList) {

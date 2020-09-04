@@ -1,3 +1,5 @@
+const { calculateProbability } = require('../Math');
+
 class Logger {
     showSimulationData({ loss, logEvents, statesTime, queue }) {
         this._renderLine();
@@ -8,6 +10,7 @@ class Logger {
         this._renderLine();
         this._formatStatesTime(statesTime);
         this._formatLossAndFullTime(loss, logEvents);
+        this._formatProbability(statesTime, logEvents);
     }
 
     _formatStatesTime(statesTime){
@@ -31,6 +34,23 @@ class Logger {
 
     _formatQueueConfig(q){
         console.log(`Queue configuration${'.'.repeat(20)} G/G/${q.size}/${q.capacity}`);
+    }
+
+    _formatProbability(statesTime, logEvents){
+
+        const elapsedTime = logEvents.slice(-1).pop().time;
+
+        const formated = Object.keys(statesTime).map(
+            k => ({
+                state: k,
+                time: this._formatTime(statesTime[k]),
+                probability: calculateProbability(statesTime[k], elapsedTime)
+            })
+        );
+        this._renderLine();
+        console.log('RESULTS');
+        this._renderLine();
+        console.table(formated);
     }
 }
 

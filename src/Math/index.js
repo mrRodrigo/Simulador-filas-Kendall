@@ -8,8 +8,14 @@ const generateRandomBetween1And0 = () => {
     const c = 997;
     let seed = cachedSeed;
     cachedSeed = (a * seed + c) % m;
-  
-    return cachedSeed / m;
-}
 
-module.exports = { rnd, generateRandomBetween1And0 }
+    return cachedSeed / m;
+};
+
+const calculateProbability = (time, totalTime) => {
+    const division = (time / totalTime) * 100;
+
+    return division.toPrecision(division>=10 ? 4 : 3).concat('%');
+};
+
+module.exports = { rnd, generateRandomBetween1And0, calculateProbability }
