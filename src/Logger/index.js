@@ -18,7 +18,7 @@ class Logger {
         console.table(
             logEvents.map(e => ({
                 type: e.type,
-                time: +this._formatTime(e.time),
+                time: this._formatTime(e.time),
                 queueState: e.queueState
             }))
         );
