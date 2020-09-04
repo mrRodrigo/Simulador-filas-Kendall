@@ -20,7 +20,6 @@ class Scheduler {
     };
 
     generateRandomNumbersList(totalNumbers) {
-
         const randomNumbersList = [];
         let randomNumber = 0;
 
@@ -31,11 +30,6 @@ class Scheduler {
 
         return randomNumbersList;
     }
-
-    //generateRandomList() {
-        // TO DO
-        //return [0.3276, 0.8851, 0.1643, 0.5542, 0.6813, 0.7221, 0.9881];
-    //};
 
     shiftRandom(){
         return this.randomList.shift();

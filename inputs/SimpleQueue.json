@@ -1,0 +1,16 @@
+{
+    "queues": {
+        "name": "Q1",
+        "arrivalMax": 2,
+        "arrivalMin": 1,
+        "awaitMax": 6,
+        "awaitMin": 3,
+        "capacity": 3,
+        "init": 2,
+        "size": 1
+    },
+
+    "randomList": [],
+
+    "totalRandomNumbers": 10
+}

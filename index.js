@@ -2,22 +2,16 @@ const Scheduler = require('./src/Scheduler');
 const Queue = require('./src/Queue');
 const Logger = require('./src/Logger');
 
-const queueConfig = {
-    size: 1,
-    capacity: 3,
-    arrivalMin: 1,
-    arrivalMax: 2,
-    awaitMin: 3,
-    awaitMax: 6,
-    init: 2
-}
+const QueueConfiguration = require(`./inputs/${process.argv[2]}.json`);
 
-const queue = new Queue(queueConfig);
+const queue = new Queue(QueueConfiguration.queues);
 const scheduler = new Scheduler(queue, []);
 
-const randomNumberList = scheduler.generateRandomNumbersList(100);
-
-scheduler.setRandomList(randomNumberList);
+if (QueueConfiguration.randomList.length === 0) {
+    scheduler.setRandomList(scheduler.generateRandomNumbersList(QueueConfiguration.totalRandomNumbers));
+} else {
+    scheduler.setRandomList(QueueConfiguration.randomList);
+}
 
 scheduler.schedulerArrival(queue.init);
 
