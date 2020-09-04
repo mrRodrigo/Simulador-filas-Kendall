@@ -1,7 +1,7 @@
 # Simulador-filas-Kendall
 
-
-
+## To run
+``` node . SimpleQueue ```
 
 ## Obtenção de um número pseudo-aleatório
 ```U(A, B) = (B – A) x U(0, 1) + A ```
