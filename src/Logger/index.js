@@ -5,6 +5,7 @@ class Logger {
         this._renderLine();
         this._formatQueueConfig(queue);
         this._renderLine();
+        console.log(`${' '.repeat(20)}*EVENTS*${' '.repeat(20)}`);
         console.table(logEvents);
         this._renderLine();
         this._renderLine();
@@ -17,11 +18,13 @@ class Logger {
         const formated = Object.keys(statesTime).map(
             k => `With ${k} on the queue, ${this._formatTime(statesTime[k])} has been elapsed.`
         );
+
         formated.map(e => console.log(e));
     }
 
     _formatLossAndFullTime(loss, logEvents){
-        console.log(`\nTotal loss: ${loss}  Total time: ${logEvents.slice(-1).pop().time}`);
+        this._renderLine();
+        console.log(`Total loss: ${loss}  Total time: ${logEvents.slice(-1).pop().time}`);
     }
 
     _formatTime(time){
@@ -48,7 +51,7 @@ class Logger {
             })
         );
         this._renderLine();
-        console.log('RESULTS');
+        console.log(`${' '.repeat(20)}*RESULTS*${' '.repeat(20)}`);
         this._renderLine();
         console.table(formated);
     }
