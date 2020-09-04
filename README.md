@@ -3,6 +3,8 @@
 ## To run
 ``` node . SimpleQueue ```
 
+É possível executar outras configurações de filas simples, basta adicionar o arquivo desejado na pasta ```inputs``` e chamar pela linha de comando o nome do arquivo criado. Siga o modelo presente no arquivo ```SimpleQueue.json```.
+
 ## Obtenção de um número pseudo-aleatório
 ```U(A, B) = (B – A) x U(0, 1) + A ```
 
