@@ -1,5 +1,5 @@
 const { Event, EnumEvent } = require('./Event');
-const { rnd } = require('./Random');
+const { rnd, generateRandomBetween1And0 } = require('./Random');
 
 class Scheduler {
     constructor(queue, randomList) {
@@ -10,17 +10,32 @@ class Scheduler {
         this.events = []; // events to be processed
         this.logEvents = []; // only for log in the end of simulation
         this.statesTime = {}; // all time for each states
-        this.randomList = this.setRandomList(randomList);
+        //this.randomList = this.setRandomList(randomList);
+        this.randomList = randomList;
     };
 
     setRandomList(randomList){
-        return randomList ? randomList : this.generateRandomList();
+        //return randomList ? randomList : this.generateRandomList();
+        this.randomList = randomList;
     };
 
-    generateRandomList() {
+    generateRandomNumbersList(totalNumbers) {
+
+        const randomNumbersList = [];
+        let randomNumber = 0;
+
+        for (let i = 0; i < totalNumbers; i++) {
+            randomNumber = parseFloat(generateRandomBetween1And0()).toFixed(4);
+            randomNumbersList.push(randomNumber);
+        }
+
+        return randomNumbersList;
+    }
+
+    //generateRandomList() {
         // TO DO
-        return [0.3276, 0.8851, 0.1643, 0.5542, 0.6813, 0.7221, 0.9881];
-    };
+        //return [0.3276, 0.8851, 0.1643, 0.5542, 0.6813, 0.7221, 0.9881];
+    //};
 
     shiftRandom(){
         return this.randomList.shift();
