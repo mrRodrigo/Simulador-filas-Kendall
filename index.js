@@ -11,10 +11,13 @@ const queueConfig = {
     awaitMax: 6,
     init: 2
 }
-const randomList = [0.3276, 0.8851, 0.1643, 0.5542, 0.6813, 0.7221, 0.9881];
 
 const queue = new Queue(queueConfig);
-const scheduler = new Scheduler(queue, randomList);
+const scheduler = new Scheduler(queue, []);
+
+const randomNumberList = scheduler.generateRandomNumbersList(100);
+
+scheduler.setRandomList(randomNumberList);
 
 scheduler.schedulerArrival(queue.init);
 
