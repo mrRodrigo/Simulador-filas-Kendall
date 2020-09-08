@@ -5,6 +5,15 @@
 
 É possível executar outras configurações de filas simples, basta adicionar o arquivo desejado na pasta ```inputs``` e chamar pela linha de comando o nome do arquivo criado. Siga o modelo presente no arquivo ```SimpleQueue.json```.
 
+### Parâmetros de execução 
+
+| Comando                | default | descrição                                                   |
+|------------------------|---------|-------------------------------------------------------------|
+| *-v, --verbose, verbose* | false   | Mostra todos detalhes  da execução.                         |
+| *-r, --run, run, + \[n\]*  | 1       | Executa n vezes a simulação e retorna a média de execuções. |
+
+**exemplos**: ```node . SimpleQueue --run 10 -v``` ```node . SimpleQueue --r 10 -verbose``` ```node . SimpleQueue -verbose run 4```
+
 ## Geração de números pseudo-aleatórios
 
 Se seu arquivo tiver a chave ```randomList``` com uma lista válida de números aleatórios, o simulador tomará como prioridade essa lista. Caso deseje que o simulador gere os valores, deixe a lista vazia e preencha a chave ```totalRandomNumbers``` com o total de números aleatórios desejados. Se houver pelo menos um item na lista, o total desejado de valores aleatórios será ignorado.
