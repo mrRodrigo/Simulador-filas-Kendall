@@ -15,7 +15,9 @@ const generateRandomBetween1And0 = () => {
 const calculateProbability = (time, totalTime) => {
     const division = (time / totalTime) * 100;
 
-    return division.toPrecision(division>=10 ? 4 : 3).concat('%');
+    return division.toPrecision(division>=10 ? 4 : 3);
 };
 
-module.exports = { rnd, generateRandomBetween1And0, calculateProbability }
+const nth = (n) => ["st","nd","rd"][((n+90)%100-10)%10-1]||"th"
+
+module.exports = { rnd, generateRandomBetween1And0, calculateProbability, nth }

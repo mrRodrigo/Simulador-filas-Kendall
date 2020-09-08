@@ -10,12 +10,10 @@ class Scheduler {
         this.events = []; // events to be processed
         this.logEvents = []; // only for log in the end of simulation
         this.statesTime = {}; // all time for each states
-        //this.randomList = this.setRandomList(randomList);
         this.randomList = randomList;
     };
 
     setRandomList(randomList){
-        //return randomList ? randomList : this.generateRandomList();
         this.randomList = randomList;
     };
 

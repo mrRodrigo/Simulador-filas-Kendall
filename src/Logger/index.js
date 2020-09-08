@@ -1,7 +1,23 @@
-const { calculateProbability } = require('../Math');
+const { calculateProbability, nth } = require('../Math');
 
 class Logger {
-    showSimulationData({ loss, logEvents, statesTime, queue }) {
+    showAverageData(listOfExecutions, verbose){
+        if(verbose)
+            listOfExecutions.forEach(
+                (e, index) => this._formatProbability(
+                    e.statesTime,
+                    e.logEvents,
+                    ` OF ${index + nth(index)} EXECUTION`
+                )
+            );
+
+        this._formatAverageProbability(listOfExecutions);
+    }
+
+    showSimulationData({ loss, logEvents, statesTime, queue }, verbose) {
+
+        if(!verbose) return this._formatProbability(statesTime, logEvents);
+
         this._renderLine();
         this._formatQueueConfig(queue);
         this._renderLine();
@@ -48,7 +64,7 @@ class Logger {
         console.log(`Queue configuration${'.'.repeat(20)} G/G/${q.size}/${q.capacity}`);
     }
 
-    _formatProbability(statesTime, logEvents){
+    _formatProbability(statesTime, logEvents, option = ''){
 
         const elapsedTime = logEvents.slice(-1).pop().time;
 
@@ -56,13 +72,43 @@ class Logger {
             k => ({
                 state: k,
                 time: this._formatTime(statesTime[k]),
-                probability: calculateProbability(statesTime[k], elapsedTime)
+                probability: calculateProbability(statesTime[k], elapsedTime).concat('%')
             })
         );
         this._renderLine();
-        console.log(`${' '.repeat(20)}*RESULTS*${' '.repeat(20)}`);
+        console.log(`${' '.repeat(option ? 10 : 20)}*RESULTS${option && option}*${' '.repeat(20)}`);
         this._renderLine();
         console.table(formated);
+    }
+
+    _formatAverageProbability(listOfExecutions){
+        const allPercent = {};
+        const result = {};
+
+        Array.from(listOfExecutions, (execution, _index) => {
+            const { statesTime, logEvents } = execution;
+            const elapsedTime = logEvents.slice(-1).pop().time;
+
+            Object.keys(statesTime).map(key => {
+                    if (allPercent[key] instanceof Array)
+                        allPercent[key].push(Number(calculateProbability(statesTime[key], elapsedTime)))
+                    else allPercent[key] = [];
+                }
+            );
+        });
+
+        Object.keys(allPercent).map(key => {
+            result[key] = {
+                state: key,
+                probability: this._formatTime(
+                    allPercent[key].reduce((previous, current) => current += previous) / allPercent[key].length
+                ).concat('%'),
+        }});
+
+        this._renderLine();
+        console.log(`${' '.repeat(15)}*AVERAGE RESULT*${' '.repeat(15)}`);
+        this._renderLine();
+        console.table(result);
     }
 }
 
