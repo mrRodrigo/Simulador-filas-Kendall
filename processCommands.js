@@ -9,7 +9,7 @@ const execute = (options) => {
     // run param is present
     const run = options.find(param => EnumTimesToRun.includes(param))
 
-    if(run) params.run = Number(options[options.indexOf(run) + 1 ]) || 1;
+    if(run) params.run = Number(options[options.indexOf(run) + 1]) || 2;
 
     return params;
 };
