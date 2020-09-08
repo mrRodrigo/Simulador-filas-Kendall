@@ -12,7 +12,7 @@
 | *-v, --verbose, verbose* | false   | Mostra todos detalhes  da execução.                         |
 | *-r, --run, run, + \[n\]*  | 1       | Executa n vezes a simulação e retorna a média de execuções. |
 
-**exemplos**: ```node . SimpleQueue --run 10 -v``` ```node . SimpleQueue --r 10 -verbose``` ```node . SimpleQueue -verbose run 4```
+**exemplos**: ```node . SimpleQueue --run 10 -v``` ```node . SimpleQueue -r 10 --verbose``` ```node . SimpleQueue --verbose run 4```
 
 ## Geração de números pseudo-aleatórios
 
