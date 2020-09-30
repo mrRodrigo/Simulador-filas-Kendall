@@ -171,7 +171,7 @@ class Scheduler {
         if(this.currentTime === 16.5453) {
             console.log('tempo correto', this.currentTime);
         }
-        
+
         fila1.decrementPosition();
 
         if (fila1.position >= fila1.size) {
@@ -192,7 +192,7 @@ class Scheduler {
     }
 
     getSimulationData(){
-        console.log('logEvents \n', this.logEvents);
+        //console.log('logEvents \n', this.logEvents);
 
         return {
             loss: this.loss,
@@ -211,6 +211,7 @@ class Scheduler {
         if (event.type === EnumEvent.ARRIVAL) {
             this.processArrival(event);
         } else if (event.type === EnumEvent.EXIT) {
+            this.currentQueue++;
             this.processExit(event);
         } else if (event.type === EnumEvent.PASSAGE) {
             this.processPassage(event);

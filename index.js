@@ -20,8 +20,16 @@ const executeNTimes = ({ verbose, run }) => {
 };
 
 const executeOnce = ({ verbose }) => {
+
     const result = execute();
-        Logger.showSimulationData(result, verbose);
+
+    console.log('resultadinho: ', result);
+
+    result.queues.map((value) => {
+        Logger.showSimulationData(value, verbose);
+    });
+
+        //Logger.showSimulationData(result, verbose);
 };
 
 const execute = () => {
