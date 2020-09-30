@@ -1,13 +1,14 @@
 {
     "queues": {
-        "name": "Q1",
+        "number": 0,
         "arrivalMax": 2,
         "arrivalMin": 1,
         "awaitMax": 6,
         "awaitMin": 3,
         "capacity": 3,
         "init": 2,
-        "size": 1
+        "size": 1,
+        "position": 0
     },
 
     "randomList": [],

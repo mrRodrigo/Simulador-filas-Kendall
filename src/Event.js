@@ -1,4 +1,4 @@
-const EnumEvent = { EXIT: 'SAIDA', ARRIVAL: 'CHEGADA' };
+const EnumEvent = { EXIT: 'SAIDA', ARRIVAL: 'CHEGADA', PASSAGE: 'PASSAGEM' };
 
 class Event {
     constructor(type, time, FILA) {

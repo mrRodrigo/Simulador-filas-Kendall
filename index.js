@@ -4,7 +4,10 @@ const Logger = require('./src/Logger');
 const processCommands = require('./processCommands');
 
 const [,, configFile, ...options ] =  process.argv;
-const QueueConfiguration = require(`./inputs/${configFile}.json`);
+//const QueueConfiguration = require(`./inputs/${configFile}.json`);
+
+//Usar essa linha para debugar. Informe o nome do arquivo desejado.
+const QueueConfiguration = require(`./inputs/TandemQueue.json`);
 
 const executeParams = processCommands(options);
 
@@ -22,8 +25,16 @@ const executeOnce = ({ verbose }) => {
 };
 
 const execute = () => {
-    const queue = new Queue(QueueConfiguration.queues);
-    const scheduler = new Scheduler(queue, []);
+
+    const arrayOfRawData = QueueConfiguration.queues;
+    const listOfQueues = [];
+
+    arrayOfRawData.map((queue) => {
+        listOfQueues.push(new Queue(queue));
+    });
+
+    //const queue = new Queue(QueueConfiguration.queues);
+    const scheduler = new Scheduler(listOfQueues, []);
 
     if (QueueConfiguration.randomList.length === 0) {
         scheduler.setRandomList(scheduler.generateRandomNumbersList(QueueConfiguration.totalRandomNumbers));
@@ -31,7 +42,8 @@ const execute = () => {
         scheduler.setRandomList(QueueConfiguration.randomList);
     }
 
-    scheduler.schedulerArrival(queue.init);
+    //o tempo inicial sempre estará na primeira fila (posicao [0])
+    scheduler.schedulerArrival(listOfQueues[0].init);
 
     while (scheduler.randomList.length > 0) {
         scheduler.execute();
