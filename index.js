@@ -21,15 +21,18 @@ const executeNTimes = ({ verbose, run }) => {
 
 const executeOnce = ({ verbose }) => {
 
-    const result = execute();
+    const allQueuesResults = execute();
 
-    console.log('resultadinho: ', result);
+    //console.log('all queues result: ', allQueuesResults);
 
-    result.queues.map((value) => {
-        Logger.showSimulationData(value, verbose);
-    });
+    allQueuesResults.map((result) => {
+        Logger.showSimulationData(result, verbose);
+    })
 
-        //Logger.showSimulationData(result, verbose);
+    console.log('Loss: ', allQueuesResults[0].loss);
+
+    //Logger.showSimulationData(result, false);
+    //Logger.showSimulationData(result, verbose);
 };
 
 const execute = () => {

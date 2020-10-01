@@ -16,13 +16,14 @@ class Scheduler {
         this.previousTime = 0;
 
         this.loss = 0;
-        this._loss = [];
         this.events = []; // events to be processed
         this.logEvents = []; // only for log in the end of simulation
         //this.statesTime agora sera um array de objetos [{0: tempo, 1: tempo, 2: tempo}, {0: tempo, 1: tempo, 2: tempo}]
         //this.statesTime = {}; // all time for each states
 
-        this.statesTimes = [{deltatime: 0}, {deltatime: 0}];
+        this.statesTime = {};
+
+        this.stateTime = {}
 
         this.randomList = randomList;
     };
@@ -51,17 +52,25 @@ class Scheduler {
     }
 
     countTime() {
-        const deltaTime = this.currentTime - this.previousTime;
-
-        const stateTimeForSpecificQueue = this.statesTimes[this.currentQueue];
-        const currentQueue = this._queues[this.currentQueue];
-
-        if(currentQueue.position === -1) {
-            console.log('trem da alegria');
+        const deltaTime = this.currentTime - this.previousTime;        
+                
+        if(!this.statesTime[0]) {
+            this.statesTime[0] = {};
         }
 
-        stateTimeForSpecificQueue[currentQueue.position] =
-            (Number(stateTimeForSpecificQueue[currentQueue.position]) || 0) + deltaTime;
+        if(!this.statesTime[1]) {
+            this.statesTime[1] = {};
+        }
+
+
+        const position1 = this._queues[0].position
+        const position2 = this._queues[1].position
+
+        const timeOnPosition1 = Number((this.statesTime[0][position1] || 0)) + deltaTime;
+        const timeOnPosition2 = Number((this.statesTime[1][position2] || 0)) + deltaTime; 
+
+        this.statesTime[0][position1] = timeOnPosition1;
+        this.statesTime[1][position2] = timeOnPosition2;
     };
 
     processArrival(event) {
@@ -79,10 +88,6 @@ class Scheduler {
                 //this.schedulerExit();
                 this.schedulerPassage();
             }
-        } else {
-            //this._loss[fila_atual]++;
-            this._loss[currentQueue]++;
-            //this.loss++;
         }
 
         this.schedulerArrival();
@@ -101,7 +106,8 @@ class Scheduler {
             new Event(
                 EnumEvent.ARRIVAL,
                 tempoChegada,
-                currentQueue.position
+                currentQueue.position,
+                this.currentQueue
             )
         );
     };
@@ -122,15 +128,15 @@ class Scheduler {
     };
 
     schedulerExit() {
-        const currentQueue = this._queues[this.currentQueue];
+        let currentQueue = this._queues[this.currentQueue];
+
+        if(!currentQueue) {
+            this.currentQueue--;
+            currentQueue = this._queues[this.currentQueue];
+        }
 
         const { awaitMin, awaitMax } = currentQueue;
         const tempoSaida = this.currentTime + rnd(awaitMin, awaitMax, this.shiftRandom());
-
-        if(tempoSaida === 12.1832) {
-            console.log('tempo correto: ',tempoSaida);
-            
-        }
 
         this.currentQueue--;
 
@@ -138,7 +144,8 @@ class Scheduler {
             new Event(
                 EnumEvent.EXIT,
                 tempoSaida,
-                currentQueue.position
+                currentQueue.position,
+                this.currentQueue
             )
         );
     };
@@ -149,57 +156,65 @@ class Scheduler {
         const { awaitMin, awaitMax } = currentQueue;
         const tempoSaida = this.currentTime + rnd(awaitMin, awaitMax, this.shiftRandom());
 
-        if(tempoSaida === 16.5453) {
-            console.log('tempo correto', this.currentTime);
-        }
-
-        this.events.push(new Event(
-            EnumEvent.PASSAGE,
-            tempoSaida,
-            currentQueue.position)
+        this.events.push(
+            new Event(
+                EnumEvent.PASSAGE,
+                tempoSaida,
+                currentQueue.position,
+                this.currentQueue
+            )
         )
     };
 
     processPassage(event) {
         this.countTime();
 
-        const currentQueue = this._queues[this.currentQueue];
-
         const fila1 = this._queues[0];
         const fila2 = this._queues[1];
-
-        if(this.currentTime === 16.5453) {
-            console.log('tempo correto', this.currentTime);
-        }
 
         fila1.decrementPosition();
 
         if (fila1.position >= fila1.size) {
             this.schedulerPassage();
+        } 
 
-        } if (fila2.position < fila2.capacity) {
+        if (fila2.position < fila2.capacity) {
             fila2.incrementPosition();
 
             if(fila2.position <= fila2.size) {
                 this.currentQueue++;
                 this.schedulerExit();
-            }
+            } 
+        } else {
+            this.loss++;
         }
-
-        
 
         this.logEvents.push(event);
     }
 
     getSimulationData(){
-        //console.log('logEvents \n', this.logEvents);
 
-        return {
-            loss: this.loss,
-            logEvents: this.logEvents,
-            statesTime: this.statesTime,
-            queue: this.queue,
-        };
+        const allQueuesResults = []
+
+        //console.log('this.statestimes', this.statesTime);
+    
+        this._queues.map((value, index) => {
+            allQueuesResults.push({ 
+                logEvents: this.logEvents, 
+                statesTime: this.statesTime[index],
+                loss: this.loss,
+                queue: value
+            })
+        });
+
+        return allQueuesResults;
+
+        // return {
+        //     loss: this.loss,
+        //     logEvents: this.logEvents,
+        //     statesTime: this.statesTime,
+        //     queue: this._queues[1],
+        // };
     };
 
     execute() {

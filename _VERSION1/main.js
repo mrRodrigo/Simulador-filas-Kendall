@@ -70,7 +70,7 @@ const agendaSaida = () => {
 const run = () => {
     const event = eventos.sort((a, b) => a.time - b.time).shift();
 
-    console.log(event);
+    //console.log(event);
 
     previousTime = currentTime;
     currentTime = event.time;
