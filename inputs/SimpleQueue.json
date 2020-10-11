@@ -1,5 +1,5 @@
 {
-    "queues": {
+    "queues": [{
         "number": 0,
         "arrivalMax": 2,
         "arrivalMin": 1,
@@ -9,9 +9,9 @@
         "init": 2,
         "size": 1,
         "position": 0
-    },
+    }],
 
     "randomList": [],
 
-    "totalRandomNumbers": 10
+    "totalRandomNumbers": 100000
 }

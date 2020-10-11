@@ -193,11 +193,7 @@ class Scheduler {
     }
 
     getSimulationData(){
-
         const allQueuesResults = []
-
-        //console.log('this.statestimes', this.statesTime);
-    
         this._queues.map((value, index) => {
             allQueuesResults.push({ 
                 logEvents: this.logEvents, 
