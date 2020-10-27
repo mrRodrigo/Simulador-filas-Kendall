@@ -61,9 +61,13 @@ class Scheduler {
 
                 if (network.length) {
                     let hadTransition = false;
+
+                    let random = this.shiftRandom();
+                    let aux = 0;
+    
                     for (let i = 0; i < network.length; i++) {
-                        if (this.shiftRandom() < network[i].probability) {
-                            //ALTERAR O MÉTODO DE PASSAGEM
+                        aux += network[i].probability;
+                        if (random < aux) {
                             this.schedulerPassage(network[i].queue);
                             hadTransition = true;
                             break;
@@ -107,8 +111,12 @@ class Scheduler {
             if (network.length) {
                 let hadTransition = false;
 
-                for(let i = 0; i < network.length; i++) {
-                    if (this.shiftRandom() < network[i].probability) {
+                let random = this.shiftRandom();
+                let aux = 0;
+
+                for (let i = 0; i < network.length; i++) {
+                    aux += network[i].probability;
+                    if (random < aux) {
                         this.schedulerPassage(network[i].queue);
                         hadTransition = true;
                         break;
@@ -158,8 +166,13 @@ class Scheduler {
 
             if (network.length) {
                 let hadTransition = false;
+
+                let random = this.shiftRandom();
+                let aux = 0;
+
                 for (let i = 0; i < network.length; i++) {
-                    if (this.shiftRandom() < network[i].probability) {
+                    aux += network[i].probability;
+                    if (random < aux) {
                         this.schedulerPassage(network[i].queue);
                         hadTransition = true;
                         break;
