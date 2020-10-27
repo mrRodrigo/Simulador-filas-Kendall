@@ -1,14 +1,18 @@
+const { rnd } = require('./Math');
+
 class Queue {
-    constructor({ number, capacity, arrivalMin, arrivalMax, awaitMin, awaitMax, init, size }) {
-        this.number = number;
-        this.capacity = capacity;
+    constructor({ size, arrivalMin, arrivalMax, awaitMin, awaitMax, number, capacity, network }) {
+        this.size = size;
         this.arrivalMin = arrivalMin;
         this.arrivalMax = arrivalMax;
         this.awaitMin = awaitMin;
         this.awaitMax = awaitMax;
-        this.size = size;
-        this.init = init;
+        this.number = number;
+        this.capacity = capacity;
+        this.network = network;
         this.position = 0;
+        this.loss = 0;
+        this.timeEachPosition = [];
     }
 
     incrementPosition() {
@@ -19,6 +23,14 @@ class Queue {
         this.position--;
     }
 
+    loss() {
+        this.loss++;
+    }
+
+    timeAccount(time) {
+
+        this.timeEachPosition[this.position] = (this.timeEachPosition[this.position] || 0) + time;
+    }
 }
 
 module.exports = Queue;

@@ -3,35 +3,20 @@ const { rnd, generateRandomBetween1And0 } = require('./Math');
 
 class Scheduler {
     constructor(queues, randomList) {
-        //this.queue = queue;
-        //Recebo um array de filas para processar e trabalhar.
-        //fila1 = _queues[0]. fila2 = queues[1]
-        this._queues = queues;
-
-        //variavel para cuidar de uma fila especifica
-        //sempre começar em zero por ser a primeira fila
+        this.scheduledEvents = [];
+        this.queues = queues;
         this.currentQueue = 0;
-
         this.currentTime = 0;
         this.previousTime = 0;
 
-        this.loss = 0;
+        this.logSchedule = [];
         this.events = []; // events to be processed
         this.logEvents = []; // only for log in the end of simulation
-        //this.statesTime agora sera um array de objetos [{0: tempo, 1: tempo, 2: tempo}, {0: tempo, 1: tempo, 2: tempo}]
-        //this.statesTime = {}; // all time for each states
-
-        this.statesTime = {};
-
-        this.stateTime = {}
 
         this.randomList = randomList;
     };
 
-    //O escalonador precisa ter as variáveis:
-    //
-
-    setRandomList(randomList){
+    setRandomList(randomList) {
         this.randomList = randomList;
     };
 
@@ -47,47 +32,60 @@ class Scheduler {
         return randomNumbersList;
     }
 
-    shiftRandom(){
+    shiftRandom() {
         return this.randomList.shift();
     }
 
     countTime() {
-        const deltaTime = this.currentTime - this.previousTime;        
-                
-        if(!this.statesTime[0]) {
-            this.statesTime[0] = {};
-        }
+        const deltaTime = this.currentTime - this.previousTime;
 
-        if(!this.statesTime[1]) {
-            this.statesTime[1] = {};
-        }
-
-
-        const position1 = this._queues[0].position
-        const position2 = this._queues[1].position
-
-        const timeOnPosition1 = Number((this.statesTime[0][position1] || 0)) + deltaTime;
-        const timeOnPosition2 = Number((this.statesTime[1][position2] || 0)) + deltaTime; 
-
-        this.statesTime[0][position1] = timeOnPosition1;
-        this.statesTime[1][position2] = timeOnPosition2;
+        this.queues.forEach((queue) => {
+            queue.timeAccount(deltaTime);
+        })
     };
+
+    queueHasCapacity() {
+        const queue = this.queues[this.currentQueue];
+        return !queue.capacity || queue.position < queue.capacity;
+    }
 
     processArrival(event) {
         this.countTime();
 
-        const currentQueue = this._queues[this.currentQueue];
+        if (this.queueHasCapacity()) {
+            this.queues[this.currentQueue].incrementPosition();
 
-        //SE FILA1 < 3
-        if (currentQueue.position < currentQueue.capacity) {
-            //FILA1++
-            currentQueue.incrementPosition();
-            //SE FILA1 <= 2
-            if (currentQueue.position <= currentQueue.size) {
-                //ALTERAR PARA PASSAGEM DE 1->2
-                //this.schedulerExit();
-                this.schedulerPassage();
+            const queue = this.queues[this.currentQueue];
+            if (queue.position <= queue.size) {
+                const { network = [] } = queue;
+
+                if (network.length) {
+                    let hadTransition = false;
+                    for (let i = 0; i < network.length; i++) {
+                        if (this.shiftRandom() < network[i].probability) {
+                            //ALTERAR O MÉTODO DE PASSAGEM
+                            this.schedulerPassage(network[i].queue);
+                            hadTransition = true;
+                            break;
+                        }
+                    }
+
+                    if (!hadTransition) {
+                        this.schedulerExit();
+                    }
+                } else {
+
+                    if (this.queues[this.currentQueue + 1]) {
+                        this.schedulerPassage();
+                    } else {
+                        this.schedulerExit();
+                    }
+
+                }
             }
+
+        } else {
+            this.queues[this.currentQueue].loss++;
         }
 
         this.schedulerArrival();
@@ -95,8 +93,92 @@ class Scheduler {
         this.logEvents.push(event);
     };
 
+    processPassage(target, event) {
+        this.countTime();
+
+        if (this.queues[this.currentQueue].position > 0) {
+            this.queues[this.currentQueue].decrementPosition();
+        }
+
+        const queue = this.queues[this.currentQueue];
+        if (queue.position >= queue.size) {
+            
+            const { network = [] } = queue;
+            if (network.length) {
+                let hadTransition = false;
+
+                for(let i = 0; i < network.length; i++) {
+                    if (this.shiftRandom() < network[i].probability) {
+                        this.schedulerPassage(network[i].queue);
+                        hadTransition = true;
+                        break;
+                    }
+                }
+
+                if (!hadTransition) {
+                    this.schedulerExit();
+                }
+            } else {
+                this.schedulerPassage();
+            }
+        }
+
+        const targetQueue = target || this.currentQueue + 1;
+
+        if (!this.queues[targetQueue]) {
+            return;
+        }
+
+        this.currentQueue = targetQueue;
+
+        if (this.queueHasCapacity()) {
+            this.queues[this.currentQueue].incrementPosition();
+
+            if (this.queues[this.currentQueue].position <= 1) {
+                this.schedulerExit();
+            }
+        } else {
+            this.queues[this.currentQueue].loss++;
+        }
+
+        this.logEvents.push(event);
+    };
+
+    processExit(event) {
+        this.countTime();
+
+        const currentQueue = this.queues[this.currentQueue];
+
+        if (currentQueue.position > 0) {
+            currentQueue.decrementPosition();
+        }
+
+        if (currentQueue.position >= currentQueue.size) {
+            const { network = [] } = currentQueue;
+
+            if (network.length) {
+                let hadTransition = false;
+                for (let i = 0; i < network.length; i++) {
+                    if (this.shiftRandom() < network[i].probability) {
+                        this.schedulerPassage(network[i].queue);
+                        hadTransition = true;
+                        break;
+                    }
+                }
+
+                if (!hadTransition) {
+                    this.schedulerExit();
+                }
+            } else {
+                this.schedulerExit();
+            }
+        }
+
+        this.logEvents.push(event);
+    };
+
     schedulerArrival(init) {
-        const currentQueue = this._queues[this.currentQueue];
+        const currentQueue = this.queues[this.currentQueue];
         const { arrivalMin, arrivalMax } = currentQueue;
 
         const tempoChegada =
@@ -106,111 +188,49 @@ class Scheduler {
             new Event(
                 EnumEvent.ARRIVAL,
                 tempoChegada,
-                currentQueue.position,
                 this.currentQueue
             )
         );
     };
 
-    processExit(event) {
-        this.countTime();
-
-        const currentQueue = this._queues[this.currentQueue];
-
-        currentQueue.decrementPosition();
-
-        //SE FILA2 >= 1
-        if (currentQueue.position >= currentQueue.size) {
-            this.schedulerExit();
-        }
-
-        this.logEvents.push(event);
-    };
-
-    schedulerExit() {
-        let currentQueue = this._queues[this.currentQueue];
-
-        if(!currentQueue) {
-            this.currentQueue--;
-            currentQueue = this._queues[this.currentQueue];
-        }
-
+    schedulerPassage(target) {
+        const currentQueue = this.queues[this.currentQueue];
         const { awaitMin, awaitMax } = currentQueue;
-        const tempoSaida = this.currentTime + rnd(awaitMin, awaitMax, this.shiftRandom());
-
-        this.currentQueue--;
-
-        this.events.push(
-            new Event(
-                EnumEvent.EXIT,
-                tempoSaida,
-                currentQueue.position,
-                this.currentQueue
-            )
-        );
-    };
-
-    schedulerPassage() {
-
-        const currentQueue = this._queues[this.currentQueue];
-        const { awaitMin, awaitMax } = currentQueue;
-        const tempoSaida = this.currentTime + rnd(awaitMin, awaitMax, this.shiftRandom());
+        const tempoPassagem = this.currentTime + rnd(awaitMin, awaitMax, this.shiftRandom());
 
         this.events.push(
             new Event(
                 EnumEvent.PASSAGE,
-                tempoSaida,
-                currentQueue.position,
-                this.currentQueue
+                tempoPassagem,
+                this.currentQueue,
+                target
             )
         )
     };
 
-    processPassage(event) {
-        this.countTime();
+    schedulerExit() {
+        const { awaitMin, awaitMax } = this.queues[this.currentQueue];
 
-        const fila1 = this._queues[0];
-        const fila2 = this._queues[1];
+        const exitTime = this.currentTime + rnd(awaitMin, awaitMax, this.shiftRandom());
 
-        fila1.decrementPosition();
+        this.events.push(
+            new Event(EnumEvent.EXIT, exitTime, this.currentQueue)
+        );
+    };
 
-        if (fila1.position >= fila1.size) {
-            this.schedulerPassage();
-        } 
-
-        if (fila2.position < fila2.capacity) {
-            fila2.incrementPosition();
-
-            if(fila2.position <= fila2.size) {
-                this.currentQueue++;
-                this.schedulerExit();
-            } 
-        } else {
-            this.loss++;
-        }
-
-        this.logEvents.push(event);
-    }
-
-    getSimulationData(){
+    getSimulationData() {
         const allQueuesResults = []
-        this._queues.map((value, index) => {
-            allQueuesResults.push({ 
-                logEvents: this.logEvents, 
-                statesTime: this.statesTime[index],
-                loss: this.loss,
+        this.queues.map((value, index) => {
+            allQueuesResults.push({
+                logEvents: this.logEvents,
+                statesTime: value.timeEachPosition,
+                loss: value.loss,
                 queue: value
             })
+            //console.log('aaa ', value);
         });
 
         return allQueuesResults;
-
-        // return {
-        //     loss: this.loss,
-        //     logEvents: this.logEvents,
-        //     statesTime: this.statesTime,
-        //     queue: this._queues[1],
-        // };
     };
 
     execute() {
@@ -218,14 +238,14 @@ class Scheduler {
 
         this.previousTime = this.currentTime;
         this.currentTime = event.time;
+        this.currentQueue = event.queue;
 
         if (event.type === EnumEvent.ARRIVAL) {
             this.processArrival(event);
         } else if (event.type === EnumEvent.EXIT) {
-            this.currentQueue++;
             this.processExit(event);
         } else if (event.type === EnumEvent.PASSAGE) {
-            this.processPassage(event);
+            this.processPassage(event.target, event);
         }
     };
 }

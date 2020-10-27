@@ -1,11 +1,10 @@
 const EnumEvent = { EXIT: 'SAIDA', ARRIVAL: 'CHEGADA', PASSAGE: 'PASSAGEM' };
 
 class Event {
-    constructor(type, time, FILA, fila) {
+    constructor(type, time, queue) {
         this.type = type;
         this.time = time;
-        this.queueState = FILA;
-        this.fila = fila;
+        this.queue = queue;
     }
 }
 

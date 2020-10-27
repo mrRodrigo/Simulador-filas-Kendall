@@ -1,5 +1,9 @@
 # Simulador-filas-Kendall
 
+## NodeJS
+Aviso! É necessário utilizar a v12.18.4 do NodeJS para garantir a funcionalidade do simulador. Versões anteriores podem apresentar problemas como probabilidades e tempos negativos.
+
+
 ## To run
 ``` node . SimpleQueue ```
 

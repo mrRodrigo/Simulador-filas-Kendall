@@ -1,0 +1,56 @@
+{
+    "queues": [
+        {
+            "size": 1,
+            "arrivalMin": 1,
+            "arrivalMax": 4,
+            "awaitMin": 1,
+            "awaitMax": 1.5,
+            "number": 0,
+            "network": [
+                {
+                    "queue": 1,
+                    "probability": 0.8
+                },
+                {
+                    "queue": 2,
+                    "probability": 0.2
+                }
+            ]
+        },
+        {
+            "size": 3,
+            "capacity": 5,
+            "awaitMin": 5,
+            "awaitMax": 10,
+            "number": 1,
+            "network": [
+                {
+                    "target": 0,
+                    "probability": 0.3
+                },
+                {
+                    "queue": 2,
+                    "probability": 0.5
+                }
+            ]
+        },
+        {
+            "size": 2,
+            "capacity": 8,
+            "awaitMin": 10,
+            "awaitMax": 20,
+            "number": 2,
+            "network": [
+                {
+                    "queue": 1,
+                    "probability": 0.7
+                }
+            ]
+        }
+    ],
+    "randomList": []
+    ,
+    "initialTime": 1,
+    "totalRandomNumbers": 100000
+}

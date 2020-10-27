@@ -8,7 +8,7 @@ const [,, configFile, ...options ] =  process.argv;
 const QueueConfiguration = require(`./inputs/${configFile}.json`);
 
 //Usar essa linha para debugar. Informe o nome do arquivo desejado.
-//const QueueConfiguration = require(`./inputs/TandemQueue.json`);
+//const QueueConfiguration = require(`./inputs/FinalQueue.json`);
 
 const executeParams = processCommands(options);
 
@@ -33,8 +33,9 @@ const executeOnce = ({ verbose }) => {
 
         allQueuesResults.map((result) => {
         Logger.showSimulationData(result, verbose);
+        console.log('Loss: ', result.loss);
     })
-        console.log('Loss: ', allQueuesResults[0].loss);
+        // console.log('Loss: ', allQueuesResults[0].loss);
     }
 
     //console.log('aaa ', allQueuesResults);
@@ -46,6 +47,7 @@ const executeOnce = ({ verbose }) => {
 const execute = () => {
 
     const arrayOfRawData = QueueConfiguration.queues;
+
     const listOfQueues = [];
     let scheduler;
 
@@ -67,7 +69,8 @@ const execute = () => {
     }
 
     //o tempo inicial sempre estará na primeira fila (posicao [0])
-    scheduler.schedulerArrival(listOfQueues[0].init);
+    scheduler.schedulerArrival(QueueConfiguration.initialTime);
+    // scheduler.schedulerArrival(listOfQueues[0].init);
 
     while (scheduler.randomList.length > 0) {
         scheduler.execute();
